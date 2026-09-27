@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumio — Learn Anything</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #182033;
+    }
+    header {
+      background: linear-gradient(135deg, #5b5ce2, #7b61ff);
+      color: white;
+      padding: 24px 18px 30px;
+      text-align: center;
+      border-radius: 0 0 28px 28px;
+    }
+    .logo { font-size: 38px; font-weight: 900; letter-spacing: -1px; }
+    .tagline { opacity: .9; margin-top: 5px; }
+    main { max-width: 760px; margin: 0 auto; padding: 20px 16px 100px; }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 16px 0;
+      box-shadow: 0 8px 28px rgba(30, 40, 80, .08);
+    }
+    h2 { margin-top: 0; }
+    label { display:block; font-weight: 700; margin: 12px 0 7px; }
+    select, textarea, input, button {
+      width: 100%;
+      font: inherit;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    select, textarea, input {
+      border: 1px solid #d8ddea;
+      background: #fbfcff;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    button {
+      border: 0;
+      background: #5b5ce2;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button.secondary { background: #eef0ff; color: #4b4cc9; }
+    .bubble {
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    .user { background: #eef0ff; margin-left: 25px; }
+    .tutor { background: #f1f3f7; margin-right: 25px; }
+    .small { color: #687089; font-size: 14px; }
+    .hidden { display:none; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">✨ Lumio</div>
+    <div class="tagline">Learn, practice, and figure things out.</div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Start learning</h2>
+      <div class="row">
+        <div>
+          <label for="subject">Subject</label>
+          <select id="subject">
+            <option>Math</option>
+            <option>Science</option>
+            <option>English</option>
+            <option>History</option>
+            <option>Philosophy</option>
+            <option>Computer Science</option>
+          </select>
+        </div>
+        <div>
+          <label for="mode">Mode</label>
+          <select id="mode">
+            <option>Practice</option>
+            <option>Homework</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="question">What are you working on?</label>
+      <textarea id="question" placeholder="Type a question or problem here..."></textarea>
+      <button onclick="askLumio()">Ask Lumio</button>
+    </section>
+
+    <section class="card">
+      <h2>💬 Lumio Tutor</h2>
+      <div id="chat">
+        <div class="bubble tutor">Hey! I'm Lumio. I'll help you work through the problem instead of just dumping the answer on you. 🚀</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>💾 Progress</h2>
+      <div class="small">Questions asked on this device:</div>
+      <div id="count" style="font-size:32px;font-weight:900;margin-top:5px;">0</div>
+      <button class="secondary" onclick="resetProgress()">Reset local progress</button>
+    </section>
+  </main>
+
+<script>
+  const STORAGE_KEY = "lumio_progress_v1";
+  let progress = Number(localStorage.getItem(STORAGE_KEY) || 0);
+  document.getElementById("count").textContent = progress;
+
+  function addBubble(text, type) {
+    const div = document.createElement("div");
+    div.className = "bubble " + type;
+    div.textContent = text;
+    document.getElementById("chat").appendChild(div);
+    div.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function askLumio() {
+    const subject = document.getElementById("subject").value;
+    const mode = document.getElementById("mode").value;
+    const question = document.getElementById("question").value.trim();
+
+    if (!question) {
+      alert("Type a question or problem first!");
+      return;
+    }
+
+    addBubble(question, "user");
+
+    progress++;
+    localStorage.setItem(STORAGE_KEY, progress);
+    document.getElementById("count").textContent = progress;
+
+    let reply = "";
+    if (mode === "Homework") {
+      reply = `Let's work through your ${subject} homework together. First, tell me what you think the first step should be.`;
+    } else {
+      reply = `Let's solve this ${subject} problem together. What do you think we should figure out first?`;
+    }
+
+    setTimeout(() => addBubble(reply, "tutor"), 350);
+    document.getElementById("question").value = "";
+  }
+
+  function resetProgress() {
+    if (confirm("Reset the local Lumio progress counter?")) {
+      progress = 0;
+      localStorage.setItem(STORAGE_KEY, "0");
+      document.getElementById("count").textContent = "0";
+    }
+  }
+</script>
+</body>
+</html>
